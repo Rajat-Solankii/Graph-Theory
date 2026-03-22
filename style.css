@@ -1,0 +1,458 @@
+/* style.css — CHRIST University Campus Graph Theory App */
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
+
+/* ─── Reset & Base ─────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #050a12;
+  --panel:     rgba(6, 18, 36, 0.92);
+  --border:    rgba(0, 229, 255, 0.25);
+  --accent:    #00e5ff;
+  --accent2:   #7c4dff;
+  --accent3:   #76ff03;
+  --warn:      #ff6d00;
+  --danger:    #ff1744;
+  --text:      #cce8f4;
+  --text-dim:  #5a8fa8;
+  --glow:      0 0 20px rgba(0,229,255,0.5);
+  --font-head: 'Orbitron', monospace;
+  --font-body: 'Rajdhani', sans-serif;
+}
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+}
+
+/* ─── Canvas ───────────────────────────────────────────────────────────────── */
+#canvas-container {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+#canvas-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  pointer-events: none;
+}
+
+/* OrbitControls interaction layer — behind all UI (z-index 2) */
+#orbit-target {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+}
+
+/* All UI panels sit above orbit layer — they naturally block orbit on hover */
+/* Ensure all UI layers are always clickable */
+#header, #module-nav, #side-panel, #right-panel, #bottom-bar,
+#tooltip, #final-overlay, #loading,
+.mod-btn, .algo-btn, .level-btn, select, button {
+  pointer-events: auto;
+  position: relative;
+}
+
+
+/* ─── Header ───────────────────────────────────────────────────────────────── */
+#header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 500;
+  background: rgba(5,10,18,0.98);
+  padding: 0 20px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  gap: 16px;
+}
+#header h1 {
+  font-family: var(--font-head);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  color: var(--accent);
+  text-shadow: var(--glow);
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+#header h1 span {
+  display: none; /* hide subtitle to keep header single-line */
+}
+#header-subtitle {
+  display: none;
+}
+#header-nodes {
+  font-family: var(--font-head);
+  font-size: 9px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ─── Module Navigation ────────────────────────────────────────────────────── */
+#module-nav {
+  position: fixed;
+  top: 42px; left: 0; right: 0;
+  z-index: 499;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 16px;
+  background: rgba(5,10,18,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  scrollbar-width: none;
+  height: 44px;
+  box-sizing: border-box;
+}
+#module-nav::-webkit-scrollbar { display: none; }
+
+.mod-btn {
+  flex-shrink: 0;
+  font-family: var(--font-head);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 6px 11px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.2s;
+  white-space: nowrap;
+  height: 28px;
+  display: flex;
+  align-items: center;
+}
+.mod-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(0,229,255,0.05);
+  box-shadow: 0 0 12px rgba(0,229,255,0.2);
+}
+.mod-btn.active {
+  border-color: var(--accent);
+  color: var(--bg);
+  background: var(--accent);
+  box-shadow: 0 0 20px rgba(0,229,255,0.5);
+}
+.mod-btn.game-btn {
+  border-color: var(--accent3);
+  color: var(--accent3);
+}
+.mod-btn.game-btn.active {
+  background: var(--accent3);
+  color: var(--bg);
+  box-shadow: 0 0 20px rgba(118,255,3,0.5);
+}
+
+/* ─── Side Panel ───────────────────────────────────────────────────────────── */
+#side-panel {
+  position: fixed;
+  top: 96px; left: 24px;
+  width: 280px;
+  z-index: 490;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: calc(100vh - 136px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.panel-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 14px 16px;
+  backdrop-filter: blur(16px);
+}
+.panel-card h3 {
+  font-family: var(--font-head);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ─── Algorithm Controls ───────────────────────────────────────────────────── */
+.algo-btn {
+  display: block;
+  width: 100%;
+  margin-bottom: 6px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  border-radius: 2px;
+  text-align: left;
+  transition: all 0.2s;
+}
+.algo-btn:hover {
+  border-color: var(--accent2);
+  color: var(--accent2);
+  background: rgba(124,77,255,0.08);
+}
+.algo-btn:last-child { margin-bottom: 0; }
+
+/* ─── Node Selector ────────────────────────────────────────────────────────── */
+select {
+  width: 100%;
+  margin-bottom: 8px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  padding: 7px 10px;
+  background: rgba(0,10,20,0.8);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 2px;
+  cursor: pointer;
+  outline: none;
+}
+select:focus { border-color: var(--accent); }
+
+/* ─── Info Panel ───────────────────────────────────────────────────────────── */
+#info-text {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text);
+  min-height: 40px;
+}
+
+/* ─── Right Panel — Legend ─────────────────────────────────────────────────── */
+#right-panel {
+  position: fixed;
+  top: 96px; right: 24px;
+  width: 200px;
+  z-index: 490;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 11px;
+  color: var(--text-dim);
+}
+.legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ─── Bottom Bar ───────────────────────────────────────────────────────────── */
+#bottom-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 500;
+  background: rgba(5,10,18,0.92);
+  border-top: 1px solid var(--border);
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  backdrop-filter: blur(12px);
+}
+
+#status-msg {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  font-family: var(--font-body);
+  letter-spacing: 0.5px;
+}
+#score-display {
+  font-family: var(--font-head);
+  font-size: 14px;
+  color: var(--accent3);
+  text-shadow: 0 0 10px rgba(118,255,3,0.6);
+}
+#controls-hint {
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+
+/* ─── Game Panel ───────────────────────────────────────────────────────────── */
+#game-panel {
+  display: none;
+}
+#game-panel.visible { display: flex; flex-direction: column; gap: 10px; }
+
+.level-btn {
+  display: block;
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 12px;
+  margin-bottom: 5px;
+  border: 1px solid rgba(118,255,3,0.3);
+  background: transparent;
+  color: var(--accent3);
+  cursor: pointer;
+  border-radius: 2px;
+  text-align: left;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+}
+.level-btn:hover {
+  background: rgba(118,255,3,0.08);
+  border-color: var(--accent3);
+  box-shadow: 0 0 10px rgba(118,255,3,0.2);
+}
+.level-btn.active {
+  background: rgba(118,255,3,0.15);
+  border-color: var(--accent3);
+}
+
+/* ─── Tooltip ──────────────────────────────────────────────────────────────── */
+#tooltip {
+  position: fixed;
+  z-index: 200;
+  background: rgba(5,10,18,0.95);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-family: var(--font-body);
+  color: var(--accent);
+  pointer-events: none;
+  display: none;
+  box-shadow: 0 0 20px rgba(0,229,255,0.3);
+  max-width: 180px;
+}
+
+/* ─── Final Scene Overlay ──────────────────────────────────────────────────── */
+#final-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  padding: 40px;
+}
+#final-overlay.visible { display: flex; }
+#final-overlay h2 {
+  font-family: var(--font-head);
+  font-size: clamp(18px, 3vw, 32px);
+  color: var(--accent);
+  text-shadow: var(--glow);
+  margin-bottom: 20px;
+  animation: pulse-text 2s ease-in-out infinite;
+}
+#final-overlay p {
+  font-size: clamp(13px, 1.5vw, 16px);
+  color: var(--text);
+  max-width: 600px;
+  line-height: 1.8;
+  margin-bottom: 24px;
+}
+#final-overlay button {
+  font-family: var(--font-head);
+  font-size: 12px;
+  padding: 12px 28px;
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  letter-spacing: 2px;
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+#final-overlay button:hover {
+  background: var(--accent);
+  color: var(--bg);
+  box-shadow: var(--glow);
+}
+
+/* ─── Animations ───────────────────────────────────────────────────────────── */
+@keyframes pulse-text {
+  0%, 100% { opacity: 1; text-shadow: 0 0 20px rgba(0,229,255,0.5); }
+  50%       { opacity: 0.7; text-shadow: 0 0 40px rgba(0,229,255,1); }
+}
+
+@keyframes slide-in {
+  from { transform: translateY(-10px); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+.panel-card { animation: slide-in 0.3s ease-out; }
+
+/* ─── Loading Overlay ──────────────────────────────────────────────────────── */
+#loading {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  transition: opacity 0.8s;
+}
+#loading.fade-out { opacity: 0; pointer-events: none; }
+#loading h2 {
+  font-family: var(--font-head);
+  font-size: 16px;
+  color: var(--accent);
+  letter-spacing: 4px;
+  animation: pulse-text 1.5s infinite;
+}
+.loader-bar {
+  width: 200px; height: 2px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.loader-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  animation: load-anim 1.5s ease-in-out forwards;
+  box-shadow: 0 0 10px var(--accent);
+}
+@keyframes load-anim {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+
+/* ─── Scrollbar ────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }

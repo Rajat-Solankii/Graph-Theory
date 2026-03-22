@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Graph Theory — CHRIST University Delhi NCR</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ── Loading Screen ──────────────────────────────────────────────────────── -->
+<div id="loading">
+  <h2>INITIALISING CAMPUS GRAPH</h2>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+  <p style="font-size:11px;color:#2a5080;letter-spacing:2px;margin-top:8px;">CHRIST UNIVERSITY DELHI NCR</p>
+</div>
+
+<!-- ── Canvas ──────────────────────────────────────────────────────────────── -->
+<div id="canvas-container"></div>
+
+<!-- ── Tooltip ─────────────────────────────────────────────────────────────── -->
+<div id="tooltip"></div>
+
+<!-- ── Header ──────────────────────────────────────────────────────────────── -->
+<div id="header">
+  <h1>Application of Tree Structures &amp; Spanning Trees — CHRIST University Delhi NCR</h1>
+  <div id="header-nodes">16 NODES · 15 EDGES</div>
+</div>
+
+<!-- ── Module Navigation ───────────────────────────────────────────────────── -->
+<div id="module-nav">
+  <button class="mod-btn active" onclick="switchModule('overview', this)">🏛 Overview</button>
+  <button class="mod-btn" onclick="switchModule('trees', this)">🌲 M1: Trees</button>
+  <button class="mod-btn" onclick="switchModule('applications', this)">📊 M2: Applications</button>
+  <button class="mod-btn" onclick="switchModule('traversal', this)">🔁 M3: Traversal</button>
+  <button class="mod-btn" onclick="switchModule('spanning', this)">🌐 M4: Spanning Tree</button>
+  <button class="mod-btn" onclick="switchModule('mst', this)">⚡ M5: Min Span Tree</button>
+  <button class="mod-btn" onclick="switchModule('dijkstra', this)">🗺️ M6: Shortest Path</button>
+  <button class="mod-btn game-btn" onclick="switchModule('game', this)">🎮 Game Mode</button>
+  <button class="mod-btn" onclick="showFinalScene()" style="border-color:#76ff03;color:#76ff03">✨ Final Scene</button>
+</div>
+
+<!-- ── Side Panel ──────────────────────────────────────────────────────────── -->
+<div id="side-panel">
+
+  <!-- Overview -->
+  <div id="panel-overview" class="panel-card">
+    <h3>Campus Overview</h3>
+    <div id="info-text" style="font-size:12px;line-height:1.7">
+      Welcome to the <strong style="color:#00e5ff">CHRIST University Delhi NCR</strong> Graph Theory Visualiser.<br><br>
+      This 3D campus map contains <strong style="color:#76ff03">16 locations</strong> connected by <strong style="color:#ffd740">15 weighted edges</strong>.<br><br>
+      Use the modules above to explore Trees, Traversals, Spanning Trees, MST and Shortest Paths interactively.<br><br>
+      <span style="color:#5a8fa8">Drag to rotate · Scroll to zoom · Right-click to pan</span>
+    </div>
+  </div>
+
+  <!-- Module 1: Trees -->
+  <div id="panel-trees" class="panel-card" style="display:none">
+    <h3>M1: Trees</h3>
+    <button class="algo-btn" onclick="mod_trees_concept()">▶ Concept Animation</button>
+    <button class="algo-btn" onclick="mod_trees_campus()">🏛 Campus Tree (from A Block)</button>
+    <button class="algo-btn" onclick="resetAllHighlights(); setStatus('Reset complete.')">↺ Reset</button>
+    <div style="margin-top:10px;font-size:11px;color:#5a8fa8;line-height:1.6">
+      A <strong style="color:#00e5ff">Tree</strong> is a connected graph with no cycles.<br>
+      For N nodes: exactly N−1 edges.
+    </div>
+  </div>
+
+  <!-- Module 2: Applications -->
+  <div id="panel-applications" class="panel-card" style="display:none">
+    <h3>M2: Applications</h3>
+    <button class="algo-btn" onclick="mod_app_org()">🏢 Org Hierarchy</button>
+    <button class="algo-btn" onclick="mod_app_fs()">📁 File System Tree</button>
+    <button class="algo-btn" onclick="mod_app_network()">🌐 Network Routing</button>
+    <div style="margin-top:10px;font-size:11px;color:#5a8fa8;line-height:1.6">
+      Trees model hierarchies, file systems, network topologies, and decision paths.
+    </div>
+  </div>
+
+  <!-- Module 3: Traversal -->
+  <div id="panel-traversal" class="panel-card" style="display:none">
+    <h3>M3: Traversal</h3>
+    <button class="algo-btn" onclick="mod_traversal('preorder')">► Preorder (Root→L→R)</button>
+    <button class="algo-btn" onclick="mod_traversal('inorder')">► Inorder (L→Root→R)</button>
+    <button class="algo-btn" onclick="mod_traversal('postorder')">► Postorder (L→R→Root)</button>
+    <button class="algo-btn" onclick="resetAllHighlights()">↺ Reset</button>
+    <div id="traversal-seq" style="margin-top:8px;font-size:11px;color:#ffd740;line-height:1.8"></div>
+  </div>
+
+  <!-- Module 4: Spanning Tree -->
+  <div id="panel-spanning" class="panel-card" style="display:none">
+    <h3>M4: Spanning Tree</h3>
+    <button class="algo-btn" onclick="mod_spanning_animate()">▶ Animate Spanning Tree</button>
+    <button class="algo-btn" onclick="mod_spanning_full()">Show Full Graph First</button>
+    <button class="algo-btn" onclick="resetAllHighlights()">↺ Reset</button>
+    <div style="margin-top:10px;font-size:11px;color:#5a8fa8;line-height:1.6">
+      A spanning tree connects all N nodes with exactly N−1 edges and no cycles.
+    </div>
+  </div>
+
+  <!-- Module 5: MST -->
+  <div id="panel-mst" class="panel-card" style="display:none">
+    <h3>M5: Minimum Spanning Tree</h3>
+    <button class="algo-btn" onclick="mod_kruskal()">⚡ Kruskal's Algorithm</button>
+    <button class="algo-btn" onclick="mod_prim()">🔵 Prim's Algorithm</button>
+    <button class="algo-btn" onclick="resetAllHighlights()">↺ Reset</button>
+    <div id="mst-info" style="margin-top:8px;font-size:12px;color:#76ff03"></div>
+  </div>
+
+  <!-- Module 6: Dijkstra -->
+  <div id="panel-dijkstra" class="panel-card" style="display:none">
+    <h3>M6: Shortest Path</h3>
+    <label style="font-size:11px;color:#5a8fa8">Start Node</label>
+    <select id="dijk-start"></select>
+    <label style="font-size:11px;color:#5a8fa8">End Node</label>
+    <select id="dijk-end"></select>
+    <button class="algo-btn" onclick="mod_dijkstra_run()" style="margin-top:4px">▶ Run Dijkstra</button>
+    <button class="algo-btn" onclick="resetAllHighlights()">↺ Reset</button>
+    <div id="path-info" style="margin-top:8px;font-size:12px;color:#76ff03;line-height:1.6"></div>
+  </div>
+
+  <!-- Game Mode -->
+  <div id="panel-game" class="panel-card" style="display:none">
+    <h3>🎮 Game Mode</h3>
+    <div id="game-panel" class="visible">
+      <button class="level-btn active" onclick="startGameLevel(1)">Lv1: Remove Cycles</button>
+      <button class="level-btn" onclick="startGameLevel(2)">Lv2: Preorder Traversal</button>
+      <button class="level-btn" onclick="startGameLevel(3)">Lv3: Build Spanning Tree</button>
+      <button class="level-btn" onclick="startGameLevel(4)">Lv4: Build MST</button>
+      <button class="level-btn" onclick="startGameLevel(5)">Lv5: Find Shortest Path</button>
+    </div>
+    <div id="game-hint" style="margin-top:10px;font-size:11px;color:#5a8fa8;line-height:1.6"></div>
+  </div>
+
+</div>
+
+<!-- ── Right Panel: Legend ──────────────────────────────────────────────────── -->
+<div id="right-panel">
+  <div class="panel-card">
+    <h3>Legend</h3>
+    <div class="legend-item"><div class="legend-dot" style="background:#00e5ff"></div>Academic Block</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#76ff03"></div>Sports Facility</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ff6d00"></div>Food & Social</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#7c4dff"></div>Library / Study</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ffd740;width:20px;height:3px;border-radius:0"></div>Edge Weight</div>
+    <div style="margin-top:10px;border-top:1px solid rgba(0,229,255,0.15);padding-top:10px">
+      <div style="font-family:'Orbitron',monospace;font-size:9px;color:#2a5080;letter-spacing:1px">NODE COLORS</div>
+      <div style="margin-top:6px" id="node-legend"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Bottom Bar ───────────────────────────────────────────────────────────── -->
+<div id="bottom-bar">
+  <div id="status-msg">Select a module to begin exploring Graph Theory</div>
+  <div id="score-display" style="display:none">SCORE: 0</div>
+  <div id="controls-hint">DRAG: Rotate · SCROLL: Zoom · RIGHT: Pan</div>
+</div>
+
+<!-- ── Final Scene Overlay ─────────────────────────────────────────────────── -->
+<div id="final-overlay">
+  <h2>🌐 GRAPH THEORY IN ACTION</h2>
+  <p>
+    Graph Theory helps solve real-world problems such as
+    <strong style="color:#00e5ff">navigation</strong>,
+    <strong style="color:#76ff03">network design</strong>, and
+    <strong style="color:#ffd740">infrastructure planning</strong>.<br><br>
+    This CHRIST University Delhi NCR campus map demonstrates how
+    <em>Spanning Trees</em>, <em>Minimum Spanning Trees</em>, and
+    <em>Shortest Path Algorithms</em> can optimise connectivity,
+    reduce cabling costs, and find fastest routes between locations.
+  </p>
+  <button onclick="closeFinalScene()">EXPLORE CAMPUS →</button>
+</div>
+
+<!-- ── Three.js & OrbitControls ────────────────────────────────────────────── -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// Inline OrbitControls (r128 compatible)
+(function(){
+'use strict';
+const {EventDispatcher,MOUSE,Quaternion,Spherical,TOUCH,Vector2,Vector3}=THREE;
+THREE.OrbitControls=function(object,domElement){
+this.object=object;this.domElement=domElement||document;
+this.enabled=true;this.target=new Vector3();
+this.minDistance=0;this.maxDistance=Infinity;
+this.minZoom=0;this.maxZoom=Infinity;
+this.minPolarAngle=0;this.maxPolarAngle=Math.PI;
+this.minAzimuthAngle=-Infinity;this.maxAzimuthAngle=Infinity;
+this.enableDamping=false;this.dampingFactor=0.05;
+this.enableZoom=true;this.zoomSpeed=1.0;
+this.enableRotate=true;this.rotateSpeed=1.0;
+this.enablePan=true;this.panSpeed=1.0;
+this.screenSpacePanning=true;this.keyPanSpeed=7.0;
+this.autoRotate=false;this.autoRotateSpeed=2.0;
+this.enableKeys=true;
+this.keys={LEFT:37,UP:38,RIGHT:39,BOTTOM:40};
+this.mouseButtons={LEFT:MOUSE.ROTATE,MIDDLE:MOUSE.DOLLY,RIGHT:MOUSE.PAN};
+this.touches={ONE:TOUCH.ROTATE,TWO:TOUCH.DOLLY_PAN};
+this.target0=this.target.clone();this.position0=this.object.position.clone();this.zoom0=this.object.zoom;
+var scope=this;
+var changeEvent={type:'change'};var startEvent={type:'start'};var endEvent={type:'end'};
+var STATE={NONE:-1,ROTATE:0,DOLLY:1,PAN:2,TOUCH_ROTATE:3,TOUCH_PAN:4,TOUCH_DOLLY_PAN:5,TOUCH_DOLLY_ROTATE:6};
+var state=STATE.NONE;
+var EPS=0.000001;
+var spherical=new Spherical();var sphericalDelta=new Spherical();
+var scale=1;var panOffset=new Vector3();var zoomChanged=false;
+var rotateStart=new Vector2();var rotateEnd=new Vector2();var rotateDelta=new Vector2();
+var panStart=new Vector2();var panEnd=new Vector2();var panDelta=new Vector2();
+var dollyStart=new Vector2();var dollyEnd=new Vector2();var dollyDelta=new Vector2();
+function getAutoRotationAngle(){return 2*Math.PI/60/60*scope.autoRotateSpeed;}
+function getZoomScale(){return Math.pow(0.95,scope.zoomSpeed);}
+function rotateLeft(angle){sphericalDelta.theta-=angle;}
+function rotateUp(angle){sphericalDelta.phi-=angle;}
+var panLeft=function(){var v=new Vector3();return function(distance,objectMatrix){v.setFromMatrixColumn(objectMatrix,0);v.multiplyScalar(-distance);panOffset.add(v);};}();
+var panUp=function(){var v=new Vector3();return function(distance,objectMatrix){if(scope.screenSpacePanning===true){v.setFromMatrixColumn(objectMatrix,1);}else{v.setFromMatrixColumn(objectMatrix,0);v.crossVectors(scope.object.up,v);}v.multiplyScalar(distance);panOffset.add(v);};}();
+var pan=function(){var offset=new Vector3();return function(deltaX,deltaY){var element=scope.domElement;if(scope.object.isPerspectiveCamera){var position=scope.object.position;offset.copy(position).sub(scope.target);var targetDistance=offset.length();targetDistance*=Math.tan((scope.object.fov/2)*Math.PI/180);panLeft(2*deltaX*targetDistance/element.clientHeight,scope.object.matrix);panUp(2*deltaY*targetDistance/element.clientHeight,scope.object.matrix);}else if(scope.object.isOrthographicCamera){panLeft(deltaX*(scope.object.right-scope.object.left)/scope.object.zoom/element.clientWidth,scope.object.matrix);panUp(deltaY*(scope.object.top-scope.object.bottom)/scope.object.zoom/element.clientHeight,scope.object.matrix);}else{console.warn('WARNING: OrbitControls.js encountered an unknown camera type - pan disabled.');scope.enablePan=false;}};}();
+function dollyOut(dollyScale){if(scope.object.isPerspectiveCamera){scale/=dollyScale;}else if(scope.object.isOrthographicCamera){scope.object.zoom=Math.max(scope.minZoom,Math.min(scope.maxZoom,scope.object.zoom*dollyScale));scope.object.updateProjectionMatrix();zoomChanged=true;}else{console.warn('WARNING: OrbitControls.js encountered an unknown camera type - dolly/zoom disabled.');scope.enableZoom=false;}}
+function dollyIn(dollyScale){if(scope.object.isPerspectiveCamera){scale*=dollyScale;}else if(scope.object.isOrthographicCamera){scope.object.zoom=Math.max(scope.minZoom,Math.min(scope.maxZoom,scope.object.zoom/dollyScale));scope.object.updateProjectionMatrix();zoomChanged=true;}else{console.warn('WARNING: OrbitControls.js encountered an unknown camera type - dolly/zoom disabled.');scope.enableZoom=false;}}
+function handleMouseDownRotate(event){rotateStart.set(event.clientX,event.clientY);}
+function handleMouseDownDolly(event){dollyStart.set(event.clientX,event.clientY);}
+function handleMouseDownPan(event){panStart.set(event.clientX,event.clientY);}
+function handleMouseMoveRotate(event){rotateEnd.set(event.clientX,event.clientY);rotateDelta.subVectors(rotateEnd,rotateStart).multiplyScalar(scope.rotateSpeed);var element=scope.domElement;rotateLeft(2*Math.PI*rotateDelta.x/element.clientHeight);rotateUp(2*Math.PI*rotateDelta.y/element.clientHeight);rotateStart.copy(rotateEnd);scope.update();}
+function handleMouseMoveDolly(event){dollyEnd.set(event.clientX,event.clientY);dollyDelta.subVectors(dollyEnd,dollyStart);if(dollyDelta.y>0){dollyOut(getZoomScale());}else if(dollyDelta.y<0){dollyIn(getZoomScale());}dollyStart.copy(dollyEnd);scope.update();}
+function handleMouseMovePan(event){panEnd.set(event.clientX,event.clientY);panDelta.subVectors(panEnd,panStart).multiplyScalar(scope.panSpeed);pan(panDelta.x,panDelta.y);panStart.copy(panEnd);scope.update();}
+function handleMouseWheel(event){if(event.deltaY<0){dollyIn(getZoomScale());}else if(event.deltaY>0){dollyOut(getZoomScale());}scope.update();}
+function handleKeyDown(event){var needsUpdate=false;switch(event.keyCode){case scope.keys.UP:pan(0,scope.keyPanSpeed);needsUpdate=true;break;case scope.keys.BOTTOM:pan(0,-scope.keyPanSpeed);needsUpdate=true;break;case scope.keys.LEFT:pan(scope.keyPanSpeed,0);needsUpdate=true;break;case scope.keys.RIGHT:pan(-scope.keyPanSpeed,0);needsUpdate=true;break;}if(needsUpdate){scope.update();}}
+function handleTouchStartRotate(event){if(event.touches.length==1){rotateStart.set(event.touches[0].pageX,event.touches[0].pageY);}else{var x=0.5*(event.touches[0].pageX+event.touches[1].pageX);var y=0.5*(event.touches[0].pageY+event.touches[1].pageY);rotateStart.set(x,y);}}
+function handleTouchStartPan(event){if(event.touches.length==1){panStart.set(event.touches[0].pageX,event.touches[0].pageY);}else{var x=0.5*(event.touches[0].pageX+event.touches[1].pageX);var y=0.5*(event.touches[0].pageY+event.touches[1].pageY);panStart.set(x,y);}}
+function handleTouchStartDolly(event){var dx=event.touches[0].pageX-event.touches[1].pageX;var dy=event.touches[0].pageY-event.touches[1].pageY;var distance=Math.sqrt(dx*dx+dy*dy);dollyStart.set(0,distance);}
+function handleTouchStartDollyPan(event){if(scope.enableZoom)handleTouchStartDolly(event);if(scope.enablePan)handleTouchStartPan(event);}
+function handleTouchStartDollyRotate(event){if(scope.enableZoom)handleTouchStartDolly(event);if(scope.enableRotate)handleTouchStartRotate(event);}
+function handleTouchMoveRotate(event){if(event.touches.length==1){rotateEnd.set(event.touches[0].pageX,event.touches[0].pageY);}else{var x=0.5*(event.touches[0].pageX+event.touches[1].pageX);var y=0.5*(event.touches[0].pageY+event.touches[1].pageY);rotateEnd.set(x,y);}rotateDelta.subVectors(rotateEnd,rotateStart).multiplyScalar(scope.rotateSpeed);var element=scope.domElement;rotateLeft(2*Math.PI*rotateDelta.x/element.clientHeight);rotateUp(2*Math.PI*rotateDelta.y/element.clientHeight);rotateStart.copy(rotateEnd);}
+function handleTouchMovePan(event){if(event.touches.length==1){panEnd.set(event.touches[0].pageX,event.touches[0].pageY);}else{var x=0.5*(event.touches[0].pageX+event.touches[1].pageX);var y=0.5*(event.touches[0].pageY+event.touches[1].pageY);panEnd.set(x,y);}panDelta.subVectors(panEnd,panStart).multiplyScalar(scope.panSpeed);pan(panDelta.x,panDelta.y);panStart.copy(panEnd);}
+function handleTouchMoveDolly(event){var dx=event.touches[0].pageX-event.touches[1].pageX;var dy=event.touches[0].pageY-event.touches[1].pageY;var distance=Math.sqrt(dx*dx+dy*dy);dollyEnd.set(0,distance);dollyDelta.set(0,Math.pow(dollyEnd.y/dollyStart.y,scope.zoomSpeed));dollyOut(dollyDelta.y);dollyStart.copy(dollyEnd);}
+function handleTouchMoveDollyPan(event){if(scope.enableZoom)handleTouchMoveDolly(event);if(scope.enablePan)handleTouchMovePan(event);}
+function handleTouchMoveDollyRotate(event){if(scope.enableZoom)handleTouchMoveDolly(event);if(scope.enableRotate)handleTouchMoveRotate(event);}
+function onMouseDown(event){if(scope.enabled===false)return;event.preventDefault();switch(event.button){case 0:if(scope.mouseButtons.LEFT===MOUSE.ROTATE){if(event.ctrlKey||event.metaKey||event.shiftKey){if(scope.enablePan===false)return;handleMouseDownPan(event);state=STATE.PAN;}else{if(scope.enableRotate===false)return;handleMouseDownRotate(event);state=STATE.ROTATE;}}else if(scope.mouseButtons.LEFT===MOUSE.PAN){if(event.ctrlKey||event.metaKey||event.shiftKey){if(scope.enableRotate===false)return;handleMouseDownRotate(event);state=STATE.ROTATE;}else{if(scope.enablePan===false)return;handleMouseDownPan(event);state=STATE.PAN;}}break;case 1:if(scope.mouseButtons.MIDDLE===MOUSE.DOLLY){if(scope.enableZoom===false)return;handleMouseDownDolly(event);state=STATE.DOLLY;}break;case 2:if(scope.mouseButtons.RIGHT===MOUSE.PAN){if(scope.enablePan===false)return;handleMouseDownPan(event);state=STATE.PAN;}else if(scope.mouseButtons.RIGHT===MOUSE.ROTATE){if(scope.enableRotate===false)return;handleMouseDownRotate(event);state=STATE.ROTATE;}break;}if(state!==STATE.NONE){scope.domElement.ownerDocument.addEventListener('mousemove',onMouseMove,false);scope.domElement.ownerDocument.addEventListener('mouseup',onMouseUp,false);scope.dispatchEvent(startEvent);}}
+function onMouseMove(event){if(scope.enabled===false)return;event.preventDefault();switch(state){case STATE.ROTATE:if(scope.enableRotate===false)return;handleMouseMoveRotate(event);break;case STATE.DOLLY:if(scope.enableZoom===false)return;handleMouseMoveDolly(event);break;case STATE.PAN:if(scope.enablePan===false)return;handleMouseMovePan(event);break;}}
+function onMouseUp(event){if(scope.enabled===false)return;scope.domElement.ownerDocument.removeEventListener('mousemove',onMouseMove,false);scope.domElement.ownerDocument.removeEventListener('mouseup',onMouseUp,false);scope.dispatchEvent(endEvent);state=STATE.NONE;}
+function onMouseWheel(event){if(scope.enabled===false||scope.enableZoom===false||(state!==STATE.NONE&&state!==STATE.ROTATE))return;event.preventDefault();event.stopPropagation();scope.dispatchEvent(startEvent);handleMouseWheel(event);scope.dispatchEvent(endEvent);}
+function onKeyDown(event){if(scope.enabled===false||scope.enableKeys===false||scope.enablePan===false)return;handleKeyDown(event);}
+function onTouchStart(event){if(scope.enabled===false)return;event.preventDefault();switch(event.touches.length){case 1:switch(scope.touches.ONE){case TOUCH.ROTATE:if(scope.enableRotate===false)return;handleTouchStartRotate(event);state=STATE.TOUCH_ROTATE;break;case TOUCH.PAN:if(scope.enablePan===false)return;handleTouchStartPan(event);state=STATE.TOUCH_PAN;break;default:state=STATE.NONE;}break;case 2:switch(scope.touches.TWO){case TOUCH.DOLLY_PAN:if(scope.enableZoom===false&&scope.enablePan===false)return;handleTouchStartDollyPan(event);state=STATE.TOUCH_DOLLY_PAN;break;case TOUCH.DOLLY_ROTATE:if(scope.enableZoom===false&&scope.enableRotate===false)return;handleTouchStartDollyRotate(event);state=STATE.TOUCH_DOLLY_ROTATE;break;default:state=STATE.NONE;}break;default:state=STATE.NONE;}if(state!==STATE.NONE){scope.dispatchEvent(startEvent);}}
+function onTouchMove(event){if(scope.enabled===false)return;event.preventDefault();switch(state){case STATE.TOUCH_ROTATE:if(scope.enableRotate===false)return;handleTouchMoveRotate(event);scope.update();break;case STATE.TOUCH_PAN:if(scope.enablePan===false)return;handleTouchMovePan(event);scope.update();break;case STATE.TOUCH_DOLLY_PAN:if(scope.enableZoom===false&&scope.enablePan===false)return;handleTouchMoveDollyPan(event);scope.update();break;case STATE.TOUCH_DOLLY_ROTATE:if(scope.enableZoom===false&&scope.enableRotate===false)return;handleTouchMoveDollyRotate(event);scope.update();break;default:state=STATE.NONE;}}
+function onTouchEnd(event){if(scope.enabled===false)return;scope.dispatchEvent(endEvent);state=STATE.NONE;}
+function onContextMenu(event){if(scope.enabled===false)return;event.preventDefault();}
+scope.domElement.addEventListener('contextmenu',onContextMenu,false);
+scope.domElement.addEventListener('mousedown',onMouseDown,false);
+scope.domElement.addEventListener('wheel',onMouseWheel,{passive:false});
+scope.domElement.addEventListener('touchstart',onTouchStart,{passive:false});
+scope.domElement.addEventListener('touchend',onTouchEnd,false);
+scope.domElement.addEventListener('touchmove',onTouchMove,{passive:false});
+scope.domElement.ownerDocument.addEventListener('keydown',onKeyDown,false);
+this.update=function(){var offset=new Vector3();var quat=new Quaternion().setFromUnitVectors(object.up,new Vector3(0,1,0));var quatInverse=quat.clone().invert();var lastPosition=new Vector3();var lastQuaternion=new Quaternion();var twoPI=2*Math.PI;return function update(){var position=scope.object.position;offset.copy(position).sub(scope.target);offset.applyQuaternion(quat);spherical.setFromVector3(offset);if(scope.autoRotate&&state===STATE.NONE){rotateLeft(getAutoRotationAngle());}if(scope.enableDamping){spherical.theta+=sphericalDelta.theta*scope.dampingFactor;spherical.phi+=sphericalDelta.phi*scope.dampingFactor;}else{spherical.theta+=sphericalDelta.theta;spherical.phi+=sphericalDelta.phi;}var min=scope.minAzimuthAngle;var max=scope.maxAzimuthAngle;if(isFinite(min)&&isFinite(max)){if(min<-Math.PI)min+=twoPI;else if(min>Math.PI)min-=twoPI;if(max<-Math.PI)max+=twoPI;else if(max>Math.PI)max-=twoPI;if(min<=max){spherical.theta=Math.max(min,Math.min(max,spherical.theta));}else{spherical.theta=(spherical.theta>( min+max)/2)?Math.max(min,spherical.theta):Math.min(max,spherical.theta);}}spherical.phi=Math.max(scope.minPolarAngle,Math.min(scope.maxPolarAngle,spherical.phi));spherical.makeSafe();spherical.radius*=scale;spherical.radius=Math.max(scope.minDistance,Math.min(scope.maxDistance,spherical.radius));if(scope.enableDamping===true){scope.target.addScaledVector(panOffset,scope.dampingFactor);}else{scope.target.add(panOffset);}offset.setFromSpherical(spherical);offset.applyQuaternion(quatInverse);position.copy(scope.target).add(offset);scope.object.lookAt(scope.target);if(scope.enableDamping===true){sphericalDelta.theta*=(1-scope.dampingFactor);sphericalDelta.phi*=(1-scope.dampingFactor);panOffset.multiplyScalar(1-scope.dampingFactor);}else{sphericalDelta.set(0,0,0);panOffset.set(0,0,0);}scale=1;if(zoomChanged||lastPosition.distanceToSquared(scope.object.position)>EPS||8*(1-lastQuaternion.dot(scope.object.quaternion))>EPS){scope.dispatchEvent(changeEvent);lastPosition.copy(scope.object.position);lastQuaternion.copy(scope.object.quaternion);zoomChanged=false;return true;}return false;};}();
+this.dispose=function(){scope.domElement.removeEventListener('contextmenu',onContextMenu,false);scope.domElement.removeEventListener('mousedown',onMouseDown,false);scope.domElement.removeEventListener('wheel',onMouseWheel,false);scope.domElement.removeEventListener('touchstart',onTouchStart,false);scope.domElement.removeEventListener('touchend',onTouchEnd,false);scope.domElement.removeEventListener('touchmove',onTouchMove,false);scope.domElement.ownerDocument.removeEventListener('keydown',onKeyDown,false);};
+this.update();
+};
+THREE.OrbitControls.prototype=Object.create(EventDispatcher.prototype);
+THREE.OrbitControls.prototype.constructor=THREE.OrbitControls;
+})();
+</script>
+
+<!-- Data & Algorithms -->
+<script src="campusData.js"></script>
+<script src="graphAlgorithms.js"></script>
+<script src="gameLogic.js"></script>
+<script src="main.js"></script>
+
+<!-- App Controller -->
+<script>
+// ── App Controller ─────────────────────────────────────────────────────────
+let currentModule = 'overview';
+let game = null;
+
+// Populate Dijkstra selects
+function populateSelects() {
+  const s = document.getElementById('dijk-start');
+  const e = document.getElementById('dijk-end');
+  CAMPUS_NODES.forEach((n, i) => {
+    s.innerHTML += `<option value="${i}">${n.name}</option>`;
+    e.innerHTML += `<option value="${i}">${n.name}</option>`;
+  });
+  s.value = '0';
+  e.value = '12';
+}
+
+// Node legend
+function buildLegend() {
+  const el = document.getElementById('node-legend');
+  CAMPUS_NODES.forEach(n => {
+    const hex = '#' + n.color.toString(16).padStart(6,'0');
+    el.innerHTML += `<div class="legend-item"><div class="legend-dot" style="background:${hex}"></div><span style="font-size:10px">${n.name}</span></div>`;
+  });
+}
+
+// Status bar
+function setStatus(msg) {
+  document.getElementById('status-msg').textContent = msg;
+}
+
+// Switch module
+function switchModule(mod, btn) {
+  currentModule = mod;
+  document.querySelectorAll('.mod-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+
+  // Hide all panels
+  document.querySelectorAll('[id^="panel-"]').forEach(p => p.style.display = 'none');
+  const panel = document.getElementById('panel-' + mod);
+  if (panel) panel.style.display = 'block';
+
+  // Reset scene
+  resetAllHighlights();
+  onNodeClick = null;
+  onEdgeClick = null;
+  document.getElementById('score-display').style.display = 'none';
+
+  if (mod === 'overview') {
+    setAllEdges(true, 0x0d3060);
+    setStatus('Welcome — explore CHRIST University Delhi NCR campus graph');
+  }
+  if (mod === 'game') {
+    document.getElementById('score-display').style.display = 'block';
+    startGameLevel(1);
+  }
+}
+
+// ── Module 1: Trees ────────────────────────────────────────────────────────
+function mod_trees_concept() {
+  resetAllHighlights();
+  setStatus('Concept: Starting with full graph, removing cycles to form a tree...');
+  // Show all edges first
+  setAllEdges(true, 0x334466);
+
+  // Animate removal of random extra edges one by one
+  const extra = [3,4,8]; // indices to "remove" conceptually
+  const steps = extra.map((idx, i) => () => {
+    setEdgeActive(idx, false);
+    setStatus(`Removing edge ${CAMPUS_EDGES[idx].from}→${CAMPUS_EDGES[idx].to} (creates cycle)...`);
+  });
+  steps.push(() => setStatus('✅ Tree formed! No cycles, all nodes connected.'));
+  runSequence(steps, 900);
+}
+
+function mod_trees_campus() {
+  resetAllHighlights();
+  setStatus('Building tree from A Block using BFS...');
+  const { treeEdges } = buildSpanningTree(0, CAMPUS_NODES, CAMPUS_EDGES);
+  setNodeHighlight(0, 0x00e5ff);
+
+  const steps = treeEdges.map(idx => () => {
+    setEdgeActive(idx, true, 0x00e5ff);
+    const e = CAMPUS_EDGES[idx];
+    setNodeHighlight(e.to, 0x00e5ff);
+    setStatus(`Connected: ${CAMPUS_NODES[e.from].name} → ${CAMPUS_NODES[e.to].name}`);
+  });
+  steps.push(() => setStatus('✅ Tree rooted at A Block — all 16 nodes connected!'));
+  runSequence(steps, 700);
+}
+
+// ── Module 2: Applications ─────────────────────────────────────────────────
+function mod_app_org() {
+  resetAllHighlights();
+  setStatus('📊 Org Hierarchy: A Block (Root) → Academic departments → Sub-units');
+  // Highlight subset as org tree
+  [0,1,2,3,5,6,7].forEach(i => setNodeHighlight(i, 0x7c4dff));
+  const eIds = CAMPUS_EDGES.reduce((arr,e,i) => {
+    if ([0,1,2,3,5,6,7].includes(e.from) && [0,1,2,3,5,6,7].includes(e.to)) arr.push(i);
+    return arr;
+  }, []);
+  eIds.forEach(i => setEdgeActive(i, true, 0x7c4dff));
+}
+
+function mod_app_fs() {
+  resetAllHighlights();
+  setStatus('📁 File System: Root (A Block) → Directories → Files');
+  const { treeEdges } = buildSpanningTree(0, CAMPUS_NODES, CAMPUS_EDGES);
+  treeEdges.forEach(i => setEdgeActive(i, true, 0xff6d00));
+  CAMPUS_NODES.forEach((_, i) => setNodeHighlight(i, 0xff6d00));
+}
+
+function mod_app_network() {
+  resetAllHighlights();
+  setStatus('🌐 Network Routing: Data packets travel via spanning tree');
+  setAllEdges(true, 0x69f0ae);
+  CAMPUS_NODES.forEach((_, i) => setNodeHighlight(i, 0x69f0ae));
+}
+
+// ── Module 3: Traversal ────────────────────────────────────────────────────
+function mod_traversal(type) {
+  resetAllHighlights();
+  const { parent } = buildSpanningTree(0, CAMPUS_NODES, CAMPUS_EDGES);
+  const { treeEdges } = buildSpanningTree(0, CAMPUS_NODES, CAMPUS_EDGES);
+  treeEdges.forEach(i => setEdgeActive(i, true, 0x334466));
+
+  let order;
+  if (type === 'preorder')  order = preorderTraversal(0, parent);
+  if (type === 'inorder')   order = inorderTraversal(0, parent);
+  if (type === 'postorder') order = postorderTraversal(0, parent);
+
+  const seqEl = document.getElementById('traversal-seq');
+  seqEl.textContent = '';
+
+  const colors = [0x00e5ff, 0x7c4dff, 0x76ff03, 0xff6d00, 0xffd740];
+  const steps = [];
+
+  for (let i = 0; i < order.length; i++) {
+    const nodeId = order[i];
+    const prev   = order[i - 1];
+    steps.push(() => {
+      if (prev !== undefined) {
+        animateTravelParticle(prev, nodeId, 0xffd740, null);
+      }
+      setNodeHighlight(nodeId, colors[i % colors.length]);
+      seqEl.textContent = order.slice(0, i+1).map(n => CAMPUS_NODES[n].name.split(' ')[0]).join(' → ');
+      setStatus(`${type.charAt(0).toUpperCase()+type.slice(1)}: visiting ${CAMPUS_NODES[nodeId].name} (${i+1}/${order.length})`);
+    });
+  }
+  steps.push(() => setStatus(`✅ ${type.charAt(0).toUpperCase()+type.slice(1)} traversal complete! ${order.length} nodes visited.`));
+  runSequence(steps, 700);
+}
+
+// ── Module 4: Spanning Tree ────────────────────────────────────────────────
+function mod_spanning_full() {
+  resetAllHighlights();
+  setAllEdges(true, 0x334466);
+  CAMPUS_NODES.forEach((_,i) => setNodeHighlight(i, 0x334488));
+  setStatus('Full campus graph shown — now animate spanning tree construction...');
+}
+
+function mod_spanning_animate() {
+  resetAllHighlights();
+  setStatus('Building spanning tree...');
+  const { treeEdges } = buildSpanningTree(0, CAMPUS_NODES, CAMPUS_EDGES);
+  const nonTree = CAMPUS_EDGES.map((_,i)=>i).filter(i => !treeEdges.includes(i));
+
+  // Show non-tree edges dimly first
+  nonTree.forEach(i => setEdgeActive(i, true, 0x221133));
+
+  const steps = treeEdges.map(idx => () => {
+    const e = CAMPUS_EDGES[idx];
+    setEdgeActive(idx, true, 0x00e5ff);
+    setNodeHighlight(e.from, 0x00e5ff);
+    setNodeHighlight(e.to,   0x00e5ff);
+    setStatus(`Adding edge: ${CAMPUS_NODES[e.from].name} ↔ ${CAMPUS_NODES[e.to].name}`);
+  });
+  steps.push(() => {
+    nonTree.forEach(i => setEdgeActive(i, false));
+    setStatus('✅ Spanning Tree: 16 nodes, 15 edges, no cycles!');
+  });
+  runSequence(steps, 800);
+}
+
+// ── Module 5: MST ──────────────────────────────────────────────────────────
+function mod_kruskal() {
+  resetAllHighlights();
+  setStatus("Kruskal's: sorting edges by weight, adding if no cycle...");
+  const steps = kruskalSteps(CAMPUS_NODES, CAMPUS_EDGES);
+  let totalW = 0;
+  const seqSteps = steps.map(s => () => {
+    const e = CAMPUS_EDGES[s.edgeIdx];
+    if (s.accepted) {
+      totalW += e.weight;
+      setEdgeActive(s.edgeIdx, true, 0x76ff03);
+      setNodeHighlight(e.from, 0x76ff03);
+      setNodeHighlight(e.to,   0x76ff03);
+      setStatus(`✅ Kruskal adds: ${CAMPUS_NODES[e.from].name} ↔ ${CAMPUS_NODES[e.to].name} (w=${e.weight}) | MST weight so far: ${totalW}`);
+    } else {
+      setEdgeActive(s.edgeIdx, true, 0xff1744);
+      setTimeout(() => setEdgeActive(s.edgeIdx, false), 400);
+      setStatus(`❌ Rejected (cycle): ${CAMPUS_NODES[e.from].name} ↔ ${CAMPUS_NODES[e.to].name}`);
+    }
+  });
+  seqSteps.push(() => {
+    document.getElementById('mst-info').textContent = `✅ Kruskal's MST · Total Weight: ${totalW}`;
+    setStatus(`Kruskal's MST complete! Total weight: ${totalW}`);
+  });
+  runSequence(seqSteps, 750);
+}
+
+function mod_prim() {
+  resetAllHighlights();
+  setStatus("Prim's: growing MST from A Block...");
+  setNodeHighlight(0, 0xffd740);
+  const steps = primSteps(CAMPUS_NODES, CAMPUS_EDGES, 0);
+  let totalW = 0;
+  const seqSteps = steps.map(s => () => {
+    const e = CAMPUS_EDGES[s.edgeIdx];
+    totalW += e.weight;
+    setEdgeActive(s.edgeIdx, true, 0xffd740);
+    setNodeHighlight(s.nodeAdded, 0xffd740);
+    setStatus(`Prim's adds: ${CAMPUS_NODES[s.nodeAdded].name} (w=${e.weight}) | Total: ${totalW}`);
+  });
+  seqSteps.push(() => {
+    document.getElementById('mst-info').textContent = `✅ Prim's MST · Total Weight: ${totalW}`;
+    setStatus(`Prim's MST complete! Total weight: ${totalW}`);
+  });
+  runSequence(seqSteps, 750);
+}
+
+// ── Module 6: Dijkstra ─────────────────────────────────────────────────────
+function mod_dijkstra_run() {
+  resetAllHighlights();
+  const startId = parseInt(document.getElementById('dijk-start').value);
+  const endId   = parseInt(document.getElementById('dijk-end').value);
+  setStatus(`Running Dijkstra from ${CAMPUS_NODES[startId].name} to ${CAMPUS_NODES[endId].name}...`);
+
+  const { dist, prev, visitOrder } = dijkstra(CAMPUS_NODES, CAMPUS_EDGES, startId);
+
+  // Animate visit order
+  const visitSteps = visitOrder.map(nid => () => {
+    setNodeHighlight(nid, 0x334488);
+    setStatus(`Dijkstra exploring: ${CAMPUS_NODES[nid].name} (dist=${dist[nid]})`);
+  });
+
+  visitSteps.push(() => {
+    // Reconstruct and highlight path
+    const { path, edgePath } = reconstructPath(prev, endId);
+    resetAllHighlights();
+    path.forEach(nid => setNodeHighlight(nid, 0xff6d00));
+    edgePath.forEach(i => setEdgeActive(i, true, 0xff6d00));
+    setNodeHighlight(startId, 0x00e5ff);
+    setNodeHighlight(endId,   0x76ff03);
+    const pathNames = path.map(n => CAMPUS_NODES[n].name).join(' → ');
+    document.getElementById('path-info').innerHTML =
+      `<strong>Path:</strong> ${pathNames}<br><strong>Total Distance:</strong> ${dist[endId]}m`;
+    setStatus(`✅ Shortest path: ${dist[endId]}m — ${pathNames}`);
+  });
+
+  runSequence(visitSteps, 300);
+}
+
+// ── Game Mode ──────────────────────────────────────────────────────────────
+function startGameLevel(lvl) {
+  document.querySelectorAll('.level-btn').forEach((b,i) => {
+    b.classList.toggle('active', i === lvl - 1);
+  });
+  document.getElementById('score-display').style.display = 'block';
+  resetAllHighlights();
+  onNodeClick = null;
+  onEdgeClick = null;
+
+  if (!game) {
+    game = new CampusGame(onGameUpdate);
+  }
+  game.setLevel(lvl);
+
+  const hints = {
+    1: 'Click edges to remove them and eliminate all cycles.',
+    2: 'Click campus nodes in the correct Preorder traversal order.',
+    3: 'Click edges to add them. Build a spanning tree!',
+    4: 'Click edges to build the Minimum Spanning Tree (lowest total weight).',
+    5: 'Click nodes to trace the shortest path from A Block to Mini Turf.',
+  };
+  document.getElementById('game-hint').textContent = hints[lvl] || '';
+
+  // Set up interaction callbacks
+  if (lvl === 1) {
+    // Show all edges
+    setAllEdges(true, 0x334466);
+    onEdgeClick = (idx) => game.removeEdge(idx);
+  } else if (lvl === 2) {
+    const { treeEdges } = buildSpanningTree(0, CAMPUS_NODES, CAMPUS_EDGES);
+    treeEdges.forEach(i => setEdgeActive(i, true, 0x334466));
+    setNodeHighlight(0, 0x00e5ff);
+    onNodeClick = (id) => game.clickNode(id);
+  } else if (lvl === 3 || lvl === 4) {
+    setAllEdges(false);
+    onEdgeClick = (idx) => game.addEdge(idx);
+  } else if (lvl === 5) {
+    const { treeEdges } = buildSpanningTree(0, CAMPUS_NODES, CAMPUS_EDGES);
+    treeEdges.forEach(i => setEdgeActive(i, true, 0x112233));
+    setNodeHighlight(0, 0x00e5ff);
+    setNodeHighlight(12, 0x76ff03);
+    onNodeClick = (id) => game.selectPathNode(id);
+  }
+}
+
+function onGameUpdate(state) {
+  setStatus(state.message);
+  document.getElementById('score-display').textContent = `SCORE: ${state.score}`;
+
+  // Visual feedback
+  state.selectedNodes.forEach(id => setNodeHighlight(id, 0x76ff03));
+  state.selectedEdges.forEach(i  => setEdgeActive(i, true, 0x76ff03));
+  state.removedEdges.forEach(i   => setEdgeActive(i, false));
+
+  if (state.complete) {
+    // Flash all green
+    CAMPUS_NODES.forEach((_, i) => setNodeHighlight(i, 0x76ff03));
+    setTimeout(() => setStatus('🎉 Level Complete! Choose next level.'), 500);
+  }
+}
+
+// ── Final Scene ────────────────────────────────────────────────────────────
+function showFinalScene() {
+  resetAllHighlights();
+  setAllEdges(true, 0x00e5ff);
+  CAMPUS_NODES.forEach((_, i) => setNodeHighlight(i, 0x00e5ff));
+  // Slowly pulse all
+  document.getElementById('final-overlay').classList.add('visible');
+}
+function closeFinalScene() {
+  document.getElementById('final-overlay').classList.remove('visible');
+  switchModule('overview');
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  initScene();
+  setupPickingListeners();
+  populateSelects();
+  buildLegend();
+  setAllEdges(true, 0x0d2848);
+
+  // Hide loading
+  setTimeout(() => {
+    const l = document.getElementById('loading');
+    l.classList.add('fade-out');
+    setTimeout(() => l.remove(), 800);
+  }, 1800);
+});
+</script>
+</body>
+</html>
