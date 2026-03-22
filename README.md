@@ -111,16 +111,6 @@ campus-graph-visualizer/
 
 ---
 
-## 📸 Screenshots (Add Your Own)
-
-> Add screenshots here for better presentation
-
-```
-![Overview](assets/screenshot1.png)
-![Game Mode](assets/screenshot2.png)
-```
-
----
 
 ## 🌍 Real-World Applications
 
